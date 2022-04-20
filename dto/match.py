@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 class Match():
     def __init__(self, home, away, time, cancelled=False):
         self.home = home
