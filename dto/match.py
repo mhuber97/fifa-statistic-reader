@@ -19,7 +19,7 @@ class Match():
                    "a_team": [self.away.name],\
                    "time": [self.time],\
                    "h_score": [self.home.score],\
-                   "a_score": [self.away.name],\
+                   "a_score": [self.away.score],\
                    "cancelled": [self.cancelled],\
                    "h_shots": [self.home.shots],\
                    "h_shots_on_target": [self.home.shots_on_target],\

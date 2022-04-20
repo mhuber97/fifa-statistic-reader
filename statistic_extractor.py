@@ -4,26 +4,23 @@ import cv2
 import numpy as np
 import pandas as pd
 import pytesseract
-from easyocr import Reader
 from matplotlib import pyplot as plt
 
 from dto.match import Match
 from dto.team import Team
+from processing.data_cleaning import correcting_data
 from processing.digit_recognition import (detect_statistic_digits,
                                           detect_statistic_digits_pytesseract)
 from processing.image_processing import get_grayscale
 from processing.text_recognition import read_string_from_box
 
-# Instantiation of EasyOCR reader
-reader = Reader(["en"], gpu=True)
-
 # Pytesseract location
 pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 
 def extract_match_statistics(image):
-    time = read_string_from_box(image, (800, 115), (1120, 155), canny=False)
-    home_name = read_string_from_box(image, (300, 155), (800, 220), canny=True)
-    away_name = read_string_from_box(image, (1120, 155), (1620, 220), canny=True)
+    time = read_string_from_box(image, (800, 115), (1120, 155))
+    home_name = read_string_from_box(image, (300, 155), (800, 220))
+    away_name = read_string_from_box(image, (1120, 155), (1620, 220))
     
     home_score = "".join(detect_statistic_digits_pytesseract(image[150:230, 820:900]))
     home_score = home_score if home_score.isdigit() else None
@@ -91,4 +88,6 @@ if __name__ == "__main__":
         if (idx%50) == 0:
             print(str(idx) + "/" + str(number_total_image))
 
+
+    df = correcting_data(df)
     df.to_csv("data.csv", index=False)

@@ -15,19 +15,24 @@ def thresholding_operation(image):
     return cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
 
 #dilation
-def dilate_operation(image):
-    kernel = np.ones((2,2),np.uint8)
-    return cv2.dilate(image, kernel, iterations = 1)
+def dilate_operation(image, x=2, y=2, iterations=1):
+    kernel = np.ones((x,y),np.uint8)
+    return cv2.dilate(image, kernel, iterations = iterations)
     
 #erosion
-def erode_operation(image):
-    kernel = np.ones((2,2), np.uint8)
-    return cv2.erode(image, kernel, iterations = 1)
+def erode_operation(image, x=2, y=2, iterations=1):
+    kernel = np.ones((x,y), np.uint8)
+    return cv2.erode(image, kernel, iterations = iterations)
 
 #opening - erosion followed by dilation
 def opening_operation(image):
-    kernel = np.ones((3,3),np.uint8)
+    kernel = np.ones((3, 3), np.uint8)
     return cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
+
+#closing - dilation followed by erosion
+def closing_operation(image):
+    kernel = np.ones((2,2),np.uint8)
+    return cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel)
 
 #canny edge detection
 def canny_operation(image):
