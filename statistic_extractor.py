@@ -23,10 +23,10 @@ def extract_match_statistics(image):
     away_name = read_string_from_box(image, (1120, 155), (1620, 220))
     
     home_score = "".join(detect_statistic_digits_pytesseract(image[150:230, 820:900]))
-    home_score = home_score if home_score.isdigit() else None
+    home_score = home_score if home_score.isdigit() else int(-1)
     
     away_score = "".join(detect_statistic_digits_pytesseract(image[150:230, 1020:1110]))
-    away_score = away_score if away_score.isdigit() else None
+    away_score = away_score if away_score.isdigit() else int(-1)
         
     home_team, away_team = detect_statistic_digits(image)
     home_team.name = home_name
