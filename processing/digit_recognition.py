@@ -4,8 +4,8 @@ import pytesseract
 from dto.team import Team
 from matplotlib import pyplot as plt
 
-from image_processing import (apply_brightness_contrast, erode_operation,
-                              opening_operation, thresholding_operation)
+from .image_processing import (apply_brightness_contrast, erode_operation,
+                               opening_operation, thresholding_operation)
 
 # Pytesseract location
 pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
