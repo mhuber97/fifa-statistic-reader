@@ -4,27 +4,11 @@ import pytesseract
 from dto.team import Team
 from matplotlib import pyplot as plt
 
-from image_processing import (apply_brightness_contrast, dilate_operation,
-                              thresholding_operation)
+from .image_processing import (apply_brightness_contrast, erode_operation,
+                               opening_operation, thresholding_operation)
 
-
-def detect_keras_ocr(image):
-    image = cv2.blur(image, (3, 3))
-    plt.imshow(image)
-    plt.show()
-    detections = pipeline.recognize([image])[0]
-    recognized_text = ""
-    for i in detections:
-        recognized_text = recognized_text + " " + i[0]
-    return recognized_text.strip()
-
-
-def easy_ocr_reader(image):
-    result = reader.readtext(image, detail = 0)
-    if len(result) > 0 :
-        return result[0]
-    else:
-        return None
+# Pytesseract location
+pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 
 
 def detect_statistic_digits_pytesseract(image):
@@ -32,13 +16,11 @@ def detect_statistic_digits_pytesseract(image):
       image = (255-image)
     image = apply_brightness_contrast(image, brightness=100, contrast=-300)
     image = thresholding_operation(image)
-    image = dilate_operation(image)
-    #plt.imshow(image)
-    #plt.show()
+    image = opening_operation(image)
+    image = cv2.resize(image, dsize=(int(image.shape[1]*1.5), image.shape[0]), interpolation=cv2.INTER_NEAREST)
     config = r'--psm 6 --oem 0 outputbase digits'
     result = pytesseract.image_to_string(image, config=config)
     return result.split("\n")[:-1]
-
 
 def create_team_stats_from_result_list(stats):
     assert(len(stats) == 8)
@@ -53,10 +35,43 @@ def create_team_stats_from_result_list(stats):
         pass_acc = stats[7]
     )
 
+def read_statistic_column(image, home=True):
+    custom_config = r'--oem 0 --psm 8 outputbase digits'
+    start = 295
+    statistics = np.zeros(8, dtype="int")
+
+    for range_images in range(8):
+
+        image_index = range_images*33+start
+        if home:
+            img_box = image[image_index:image_index+30, 575:600] # left column
+        else:
+            img_box = image[image_index:image_index+30, 955:980] #right column
+        
+        if np.mean(img_box) > 100:
+              img_box = (255-img_box)
+
+        h, w = img_box.shape
+        img = img_box.copy()
+        img = cv2.resize(img, (w*5,h*3), cv2.INTER_NEAREST)
+
+        (thresh, img) = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY)
+
+        img = erode_operation(img, 2, 2, 1)
+        result = pytesseract.image_to_string(img, config=custom_config)
+        result = result.splitlines()
+        
+        if len(result) > 1 and str(result[0]).isdigit(): # pytesseract returns an empty result as the last index
+            np.put(statistics, range_images, int(result[0]))
+        else:
+            np.put(statistics, range_images, int(-1))
+    return statistics
     
 def detect_statistic_digits(image):
-    home = detect_statistic_digits_pytesseract(image[440:850, 970:1120])
-    away = detect_statistic_digits_pytesseract(image[440:850, 1650:1760])
+    # make image smaller for faster processing
+    image = cv2.resize(image, dsize=(1080, 720), interpolation=cv2.INTER_NEAREST) 
+    home = read_statistic_column(image, home=True)
+    away = read_statistic_column(image, home=False)
     home_team_stats = create_team_stats_from_result_list(home)
     away_team_stats = create_team_stats_from_result_list(away)
     return home_team_stats, away_team_stats
