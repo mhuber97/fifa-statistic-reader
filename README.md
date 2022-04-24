@@ -27,3 +27,7 @@ For the statistic extraction, please run the file `statistic_extractor.py`. It w
 - E = EasyOCR
 - T = Tesseract
 - K = KerasOCR
+
+The file `process_upload.ipynb` is used to read the csv data obtained after the text extraction, cleans the data and uploads it on a PostgreSQL database. To run this file is first required a configuration file `config.ini` that can be generated thanks to the file `config_maker.py`. Inside this file you first need to fill your database login data and then execute it.
+
+The file `pearson.ipynb` computes the pearson correlation coefficient over all the columns. A PostgreSQL database is needed to load the data. 
