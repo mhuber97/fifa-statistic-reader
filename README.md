@@ -5,7 +5,6 @@ This repository uses computer vision to read the statistics from FIFA 21 menu sc
 We need Python 3.10 or newer.
 We need the images that are required for the data extraction. Please create a directory `./data` and put them in there. 
 Please install the requirements with the script `install_requirements.sh`. This entails a download of english training data for the legacy engine of Tesseract. The default location of Tesseract is in `/usr/share/tesseract-ocr/4.00/tessdata/`. If your setup is different, please change the path in the file. 
-Furthermore, we are using Tesseract and its python interface for the OCR.
 
 ```sh
 sh install_requirements.sh
