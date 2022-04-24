@@ -20,7 +20,7 @@ def correct_time(r):
 
     if ("PEN" in r.time):
         m = REMatcher(r.time)
-        if m.match(r"\[(\d+)\W(\d+)\]"):
+        if m.match(r"(\d+)\W(\d+)"):
             r.h_penalty_score = int(m.group(1))
             r.a_penalty_score = int(m.group(2))
         else:
